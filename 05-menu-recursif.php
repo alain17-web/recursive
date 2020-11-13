@@ -78,7 +78,7 @@ $menu = createMenuMulti(0,0,$rubriques);
         nav ul li ul {
             display:none; /* sous-menu masqués */
             position:absolute;
-            top:100%;
+            top:30px;
             left:0;
         }
         nav  li:hover > ul {
