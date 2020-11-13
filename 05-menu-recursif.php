@@ -12,7 +12,6 @@ function createMenuMulti(int $parent, int $level, array $rub)
     // premier passage (ouverture du premier menu)
     if (!$level && !$prevLevel) $out .= "\n<ul id='startmenu'>\n";
 
-
     foreach ($rub as $item) {
 
         if ($parent == $item['rubriques_idrubriques']) {
