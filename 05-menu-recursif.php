@@ -16,11 +16,11 @@ function createMenuMulti(int $parent, int $level, array $rub){
         // si on est l'enfant d'une autre rubrique (ou 0 sur l'accueil)
         if($parent == $item['rubriques_idrubriques']){
             // si on est le premier enfant
-            if($prevLevel<$level) $out .= "\n<ul class='menu'>\n";
+            if($prevLevel<$level) $out .= "\n<ul class='menu'>\n$parent\n";
             // pour tous les niveaux
             $out .="\n    <li><a href='?id={$item['idrubriques']}'>{$item['rubriques_name']}</a>";
             // si on n'est pas sur un parent on ferme le li
-            if($level !=$parent) $out.="\n    </li>";
+            if($level !=$parent) $out.="\n    </li>\n";
             // on garde dans $prevLevel le $level de cette itération de boucle
             $prevLevel = $level;
             // on va chercher les sous-menu de la rubrique actuelle (si existante)
@@ -33,6 +33,27 @@ function createMenuMulti(int $parent, int $level, array $rub){
     elseif ($prevLevel==$level) $out .="\n</li></ul>";
 
     return $out;
+}
+
+
+function afficher_menu($parent, $niveau, $array) {
+    $html = "";
+    $niveau_precedent = 0;
+    if (!$niveau && !$niveau_precedent) $html .= "\n<ul>\n";
+    foreach ($array AS $noeud) {
+        if ($parent == $noeud['rubriques_idrubriques']) {
+            if ($niveau_precedent < $niveau) $html .= "\n<ul>\n";
+            $html .= "<li>" . $noeud['rubriques_name'];
+
+            $niveau_precedent = $niveau;
+            $html .= afficher_menu($noeud['idrubriques'], ($niveau + 1), $array);
+
+        }
+    }
+    if (($niveau_precedent == $niveau) && ($niveau_precedent != 0)) $html .= "</li></ul>\n\n";
+    else if ($niveau_precedent == $niveau) $html .= "</ul>\n";
+    else $html .= "\n";
+    return $html;
 }
 
 // connexion
@@ -78,7 +99,7 @@ $menu = createMenuMulti(0,0,$rubriques);
         nav ul li ul {
             display:none; /* sous-menu masqués */
             position:absolute;
-            top:100%;
+            top:30px;
             left:0;
         }
         nav  li:hover > ul {
@@ -94,6 +115,9 @@ $menu = createMenuMulti(0,0,$rubriques);
             background:#343a40;
         }
         nav  ul ul ul { /* niveau 3 */
+            background:#343a40;
+        }
+        nav  ul ul ul ul{ /* niveau 4 */
             background:#343a40;
         }
         nav  ul li a {
@@ -112,9 +136,14 @@ $menu = createMenuMulti(0,0,$rubriques);
     </style>
 </head>
 <body>
-<nav><a class="navbar-brand" href="#">Navbar</a><?php
+<nav>
+    <a class="navbar-brand" href="#">Navbar</a>
+    <?php
     echo $menu;
-    ?></nav>
-
+    ?>
+</nav>
+<p><?php
+    echo afficher_menu(0,0,$rubriques);
+    ?></p>
 </body>
 </html>
