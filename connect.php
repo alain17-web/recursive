@@ -1,4 +1,7 @@
 <?php
+// Dependency
+require_once "config.php";
+
 // procedural mysqli connection
 
 function connect(){
