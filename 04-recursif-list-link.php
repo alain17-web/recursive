@@ -14,7 +14,8 @@ function listFolders(string $dir="./"){
                 // chemin vers les fichiers
                 $path = $dir."/".$files;
                 // affichage du fichier / dossier
-                $out .= "<li>$files</li>";
+                if(filetype($path)=="dir") $out .= "<li>- <a href='?dir=$path'>$files</a></li><br>";
+                else $out .= "<li><a href='$path'>$files</a></li><br>";
                 // si c'est un dossier, on va devoir ré-effectuer le while pour lister ce dossier, donc utilisation de la récursivité de cette variable
                 if(is_dir($path)) $out .= listFolders($path);
             }
@@ -43,9 +44,13 @@ function listFolders(string $dir="./"){
 <h1>listFolders</h1>
 <p>
     <?php
+
+    if(isset($_GET['dir'])): echo listFolders($_GET['dir']);
+    else:
     //echo listFolders();
     echo "<hr>";
     echo listFolders("folder");
+    endif;
     ?>
 </p>
 </body>
