@@ -10,27 +10,36 @@ function createMenuMulti(int $parent, int $level, array $rub)
     $prevLevel = 0;// niveau précédent, 0 au démarage
 
     // premier passage (ouverture du premier menu)
-    if (!$level && !$prevLevel) $out .= "\n<ul id='startmenu'>\n";
+    if (!$level && !$prevLevel) $out .= "<ul id='startmenu'>";
 
     foreach ($rub as $item) {
 
         if ($parent == $item['rubriques_idrubriques']) {
 
-            if ($prevLevel < $level) $out .= "\n  <ul class='menu'>\n";
-
-            $out .= "\n<li><a href='?id={$item['idrubriques']}'>{$item['rubriques_name']}</a>";
+            if ($prevLevel < $level) {
+                $out .="\n\n";
+                for($i=0;$i<$level;$i++) $out .="       ";
+                $out .= "<ul class='menu'>\n";
+            }
+            $out .="\n";
+            for($i=0;$i<$level;$i++) $out .="       ";
+            $out .= "<li><a href='?id={$item['idrubriques']}'>{$item['rubriques_name']}</a>";
 
             $prevLevel = $level;
 
             $out .= createMenuMulti($item['idrubriques'], ($level + 1), $rub);
 
+            $out .="\n";
+            for($i=0;$i<$level;$i++) $out .="       ";
             $out .= "</li>";
         }
     }
 
-    if (($prevLevel != $level) && $prevLevel != 0) $out .= "\n</ul></li>";
-
-    elseif ($prevLevel == $level) $out .= "\n</ul>";
+    if ($prevLevel == $level){
+        $out .="\n";
+        for($i=0;$i<$level;$i++) $out .="      ";
+        $out .= "</ul>";
+    }
 
     return $out;
 }
@@ -104,7 +113,7 @@ $menu = createMenuMulti(0, 0, $rubriques);
 </head>
 <body>
 <nav>
-    <?= $menu; ?>
+<?= $menu; ?>
 </nav>
 
 </body>
