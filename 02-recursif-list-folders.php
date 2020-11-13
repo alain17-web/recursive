@@ -1,25 +1,30 @@
 <?php
 // fonction récursive qui liste le nom des dossiers
 function listFolders(string $dir="./"){
-    // création de la variable de sortie
-    $out = "<h3>Mes Dossiers</h3>";
+    // création de la variable de sortie avec ouverture de UL
+    $out = "<ul>";
 
     // utilisation de opendir pour ouvrir le dossier
     $folder = opendir($dir);
 
     // Tant que j'ai des éléments dans ce dossier, on les affiches sans distinctions, le . représente la racine du dossier et le .. représente "remonter d'un niveau dans l'arborescence"
     while ($files = readdir($folder)){
-        // si l'élément n'est pas un répertoire
-        if(!is_dir($files)){
-            $out .= "$files<br>";
-        // l'élément est un répertoire
-        }else {
-            // si le dossier est le .(l'actuel) ou le .. (niveau parent) continue permet de passer à l'itération suivante de la boucle while sans exécuter le code qui suit ce continue
-            if($files=="."||$files=="..") continue;
-            // s'exécute si le continue n'est pas appelé
-            $out .= "-- $files<br>";
-        }
+            // si on est pas sur le . ou le ..
+            if($files!="."&&$files!=".."){
+                // chemin vers les fichiers
+                $path = $dir."/".$files;
+                // affichage du fichier / dossier
+                $out .= "<li>$files</li>";
+                // si c'est un dossier, on va devoir ré-effectuer le while pour lister ce dossier, donc utilisation de la récursivité de cette variable
+                if(is_dir($path)) $out .= listFolders($path);
+            }
+
     }
+
+    // fermeture des dossiers
+    closedir($folder);
+
+    $out.= "</ul>";
 
     // sortie
     return $out;
@@ -39,6 +44,8 @@ function listFolders(string $dir="./"){
 <p>
     <?php
     echo listFolders();
+    echo "<hr>";
+    echo listFolders("folder");
     ?>
 </p>
 </body>
