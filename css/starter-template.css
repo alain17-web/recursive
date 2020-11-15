@@ -1,0 +1,53 @@
+body {
+  padding-top: 5rem;
+}
+.starter-template {
+  padding: 3rem 1.5rem;
+  text-align: center;
+}
+nav ul {
+  position:relative;
+  width:100%;
+  list-style:none outside none;
+}
+nav ul li {
+  float:left; /* menu, sous-menus horizontaux */
+}
+nav ul:before, .navbar ul:after {
+  display:table; content:''; clear:both;
+  /* permet de remettre les li float:left dans le flux */
+}
+nav ul li ul {
+  display:none; /* sous-menu masqués */
+  position:absolute;
+  top:100%;
+  left:0;
+}
+nav  li:hover > ul {
+  display:block; /* sous-menu affiché */
+}
+
+/* ----------------------- */
+/* DECO */
+nav  ul { /* niveau 1 */
+  background:#343a40;
+}
+nav  ul ul { /* niveau 2 */
+  background:#343a40;
+}
+nav  ul ul ul { /* niveau 3 */
+  background:#343a40;
+}
+nav  ul li a {
+  display:block;
+  padding:10px 15px;
+  color:#fff;
+  text-decoration:none;
+}
+nav  ul li:hover > a {
+  background:#666;
+  color:#fff;
+}
+nav  ul li a {
+  border-right:1px solid #fff;
+}
