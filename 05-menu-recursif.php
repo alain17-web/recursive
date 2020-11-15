@@ -12,35 +12,46 @@ function createMenuMulti(int $parent, int $level, array $rub)
     // premier passage (ouverture du premier menu)
     if (!$level && !$prevLevel) $out .= "<ul id='startmenu'>";
 
+    // tant qu'on a des rubriques
     foreach ($rub as $item) {
-
+        // si enfant de l'id de la rubrique actuelle (0 pour les menus de l'accueil)
         if ($parent == $item['rubriques_idrubriques']) {
-
+            // si on a un sous-menu
             if ($prevLevel < $level) {
+                // 2 retour à la ligne
                 $out .="\n\n";
+                // on augmente l'indentation (tab) suivant le level
                 for($i=0;$i<$level;$i++) $out .="       ";
+                // début du sous-menu
                 $out .= "<ul class='menu'>\n";
             }
+            // affichage du lien avec indentation
             $out .="\n";
             for($i=0;$i<$level;$i++) $out .="       ";
             $out .= "<li><a href='?id={$item['idrubriques']}'>{$item['rubriques_name']}</a>";
 
+            // mise à jour du level précédent (pas d'ul class='menu')
             $prevLevel = $level;
 
+            // chargement récursif tant qu'on a des sous éléments
             $out .= createMenuMulti($item['idrubriques'], ($level + 1), $rub);
 
+            // fermeture du li (fin de l'arborescence: plus d'enfants) avec indentation
+            // Merci @McDibou pour la correction de cette erreur !
             $out .="\n";
             for($i=0;$i<$level;$i++) $out .="       ";
             $out .= "</li>";
         }
     }
 
+    // fermeture du ul si on a pas de rubriques enfants du level actuel avec indentation
     if ($prevLevel == $level){
         $out .="\n";
         for($i=0;$i<$level;$i++) $out .="      ";
         $out .= "</ul>";
     }
 
+    // sortie des données dans un $out .= $out, ou si c'est le dernier appel sortie finale
     return $out;
 }
 
@@ -66,28 +77,36 @@ $menu = createMenuMulti(0, 0, $rubriques);
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <title>Menu récursif</title>
 
     <style>
-
+        /*
+        Merci @McDibou pour cette version du CSS
+         */
         body, nav a {
-            background: #343a40;
+            background: #FFF;
             color: #2e3740;
         }
 
         nav ul {
             list-style: none outside none;
+            width:100%;
         }
 
         nav ul li {
             float: left;
 
         }
+        nav ul:before, .navbar ul:after {
+            display:table; content:''; clear:both;
+            /* permet de remettre les li float:left dans le flux */
+        }
 
         nav ul li ul {
-            position: relative;
+            position: absolute;
             display: none; /* sous-menu masqués */
         }
+
 
         nav li:hover > ul {
             display: inline-block; /* sous-menu affiché */
@@ -100,7 +119,7 @@ $menu = createMenuMulti(0, 0, $rubriques);
             padding: 10px 15px;
             color: #000;
             text-decoration: none;
-            border-right: 1px solid #000;
+            border: 1px solid #000;
         }
 
         nav :hover > a {
