@@ -3,57 +3,56 @@
 require_once "connect.php";
 
 // fonction récursive pour obtenir des ul > li imbriqués pour un menu multi-niveau
-function createMenuMulti(int $parent, int $level, array $rub){
+function createMenuMulti(int $parent, int $level, array $rub)
+{
     // initialisation à chaque récursivité
-    $out=""; // chaîne vide
-    $prevLevel=0; // niveau précédent, 0 au démarage
+    $out = ""; // chaîne vide
+    $prevLevel = 0;// niveau précédent, 0 au démarage
 
     // premier passage (ouverture du premier menu)
-    if(!$level&&!$prevLevel) $out .="\n<ul id='startmenu'>\n";
+    if (!$level && !$prevLevel) $out .= "<ul id='startmenu'>";
 
-    // tant qu'on a des éléments dans le tableau
-    foreach ($rub as $item){
-        // si on est l'enfant d'une autre rubrique (ou 0 sur l'accueil)
-        if($parent == $item['rubriques_idrubriques']){
-            // si on est le premier enfant
-            if($prevLevel<$level) $out .= "\n<ul class='menu'>\n$parent\n";
-            // pour tous les niveaux
-            $out .="\n    <li><a href='?id={$item['idrubriques']}'>{$item['rubriques_name']}</a>";
-            // si on n'est pas sur un parent on ferme le li
-            if($level !=$parent) $out.="\n    </li>\n";
-            // on garde dans $prevLevel le $level de cette itération de boucle
+    // tant qu'on a des rubriques
+    foreach ($rub as $item) {
+        // si enfant de l'id de la rubrique actuelle (0 pour les menus de l'accueil)
+        if ($parent == $item['rubriques_idrubriques']) {
+            // si on a un sous-menu
+            if ($prevLevel < $level) {
+                // 2 retour à la ligne
+                $out .="\n\n";
+                // on augmente l'indentation (tab) suivant le level
+                for($i=0;$i<$level;$i++) $out .="       ";
+                // début du sous-menu
+                $out .= "<ul class='menu'>\n";
+            }
+            // affichage du lien avec indentation
+            $out .="\n";
+            for($i=0;$i<$level;$i++) $out .="       ";
+            $out .= "<li><a href='?id={$item['idrubriques']}'>{$item['rubriques_name']}</a>";
+
+            // mise à jour du level précédent (pas d'ul class='menu')
             $prevLevel = $level;
-            // on va chercher les sous-menu de la rubrique actuelle (si existante)
-            $out .= createMenuMulti($item['idrubriques'],($level+1),$rub);
+
+            // chargement récursif tant qu'on a des sous éléments
+            $out .= createMenuMulti($item['idrubriques'], ($level + 1), $rub);
+
+            // fermeture du li (fin de l'arborescence: plus d'enfants) avec indentation
+            // Merci @McDibou pour la correction de cette erreur !
+            $out .="\n";
+            for($i=0;$i<$level;$i++) $out .="       ";
+            $out .= "</li>";
         }
     }
-    // fermeture d'un sous menu
-    if(($prevLevel==$level)&&$prevLevel!=0) $out .="\n</ul></li>";
-    // fermeture du menu principal
-    elseif ($prevLevel==$level) $out .="\n</li></ul>";
 
+    // fermeture du ul si on a pas de rubriques enfants du level actuel avec indentation
+    if ($prevLevel == $level){
+        $out .="\n";
+        for($i=0;$i<$level;$i++) $out .="      ";
+        $out .= "</ul>";
+    }
+
+    // sortie des données dans un $out .= $out, ou si c'est le dernier appel sortie finale
     return $out;
-}
-
-
-function afficher_menu($parent, $niveau, $array) {
-    $html = "";
-    $niveau_precedent = 0;
-    if (!$niveau && !$niveau_precedent) $html .= "\n<ul>\n";
-    foreach ($array AS $noeud) {
-        if ($parent == $noeud['rubriques_idrubriques']) {
-            if ($niveau_precedent < $niveau) $html .= "\n<ul>\n";
-            $html .= "<li>" . $noeud['rubriques_name'];
-
-            $niveau_precedent = $niveau;
-            $html .= afficher_menu($noeud['idrubriques'], ($niveau + 1), $array);
-
-        }
-    }
-    if (($niveau_precedent == $niveau) && ($niveau_precedent != 0)) $html .= "</li></ul>\n\n";
-    else if ($niveau_precedent == $niveau) $html .= "</ul>\n";
-    else $html .= "\n";
-    return $html;
 }
 
 // connexion
@@ -63,12 +62,12 @@ $db = connect();
 $sql = "SELECT * FROM rubriques ORDER BY rubriques_order ASC";
 
 // récupération des rubriques
-$request = mysqli_query($db,$sql)or die(mysqli_error($db));
+$request = mysqli_query($db, $sql) or die(mysqli_error($db));
 
 // si on récupère au moins une rubrique on la/les met dans un tableau indexé contenant des tableaux associatifs, sinon c'est un tableau vide
-$rubriques = (mysqli_num_rows($request))? mysqli_fetch_all($request,MYSQLI_ASSOC):[];
+$rubriques = (mysqli_num_rows($request)) ? mysqli_fetch_all($request, MYSQLI_ASSOC) : [];
 
-$menu = createMenuMulti(0,0,$rubriques);
+$menu = createMenuMulti(0, 0, $rubriques);
 
 ?>
 <!doctype html>
@@ -78,72 +77,63 @@ $menu = createMenuMulti(0,0,$rubriques);
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <title>Menu récursif</title>
+
     <style>
-        nav{
-            background:#343a40;
+        /*
+        Merci @McDibou pour cette version du CSS
+         */
+        body, nav a {
+            background: #FFF;
             color: #2e3740;
         }
+
         nav ul {
-            position:relative;
+            list-style: none outside none;
             width:100%;
-            list-style:none outside none;
         }
+
         nav ul li {
-            float:left; /* menu, sous-menus horizontaux */
+            float: left;
+
         }
         nav ul:before, .navbar ul:after {
             display:table; content:''; clear:both;
             /* permet de remettre les li float:left dans le flux */
         }
+
         nav ul li ul {
-            display:none; /* sous-menu masqués */
-            position:absolute;
-            top:30px;
-            left:0;
-        }
-        nav  li:hover > ul {
-            display:block; /* sous-menu affiché */
+            position: absolute;
+            display: none; /* sous-menu masqués */
         }
 
-        /* ----------------------- */
-        /* DECO */
-        nav  ul { /* niveau 1 */
-            background:#343a40;
+
+        nav li:hover > ul {
+            display: inline-block; /* sous-menu affiché */
+
         }
-        nav  ul ul { /* niveau 2 */
-            background:#343a40;
+
+        nav a {
+            display: block;
+            position: relative;
+            padding: 10px 15px;
+            color: #000;
+            text-decoration: none;
+            border: 1px solid #000;
         }
-        nav  ul ul ul { /* niveau 3 */
-            background:#343a40;
+
+        nav :hover > a {
+            background: #c3c3c3;
+            color: #000;
         }
-        nav  ul ul ul ul{ /* niveau 4 */
-            background:#343a40;
-        }
-        nav  ul li a {
-            display:block;
-            padding:10px 15px;
-            color:#000;
-            text-decoration:none;
-        }
-        nav  ul li:hover > a {
-            background:#666;
-            color:#000;
-        }
-        nav  ul li a {
-            border-right:1px solid #000;
-        }
+
     </style>
+
 </head>
 <body>
 <nav>
-    <a class="navbar-brand" href="#">Navbar</a>
-    <?php
-    echo $menu;
-    ?>
+<?= $menu; ?>
 </nav>
-<p><?php
-    echo afficher_menu(0,0,$rubriques);
-    ?></p>
+
 </body>
 </html>
