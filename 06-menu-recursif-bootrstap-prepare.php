@@ -106,79 +106,15 @@ $menu = createMenuMultiBootstrap(0, 0, $rubriques);
                 aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler">
             <span class="navbar-toggler-icon"></span>
         </button>
-        
-        <div id='navbarContent' class='collapse navbar-collapse'>
-<?=$menu?>
-        </div>
-</nav>
-<hr>
-<nav class='navbar navbar-expand-lg navbar-light bg-white py-3 shadow-sm'>
-    <div class='container'>
-        <a href='#' class='navbar-brand font-weight-bold'>Multilevel Dropdown</a>
-        <button type='button' data-toggle='collapse' data-target='#navbarContent' aria-controls='navbars'
-                aria-expanded='false' aria-label='Toggle navigation' class='navbar-toggler'>
-            <span class='navbar-toggler-icon'></span>
-        </button>
-
 
         <div id='navbarContent' class='collapse navbar-collapse'>
-            <ul class='navbar-nav mr-auto'>
-                <!-- Level one dropdown -->
-                <li class='nav-item dropdown'>
-                    <a href='?h=5' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'
-                       class='nav-link dropdown-toggle'>Dropdown</a>
-                    <ul class='dropdown-menu border-0 shadow'>
-                        <li><a href='#' class='dropdown-item'>Some action </a></li>
-                        <li><a href='#' class='dropdown-item'>Some other action</a></li>
+            <?= $menu ?>
 
-                        <!-- Level two dropdown-->
-                        <li class='dropdown-submenu'>
-                            <a href='#' role='button' data-toggle='dropdown' aria-haspopup='true'
-                               aria-expanded='false' class='dropdown-item dropdown-toggle'>Hover for action</a>
-                            <ul class='dropdown-menu border-0 shadow'>
-                                <li>
-                                    <a tabindex='-1' href='#' class='dropdown-item'>level 2</a>
-                                </li>
-
-                                <!-- Level three dropdown-->
-                                <li class='dropdown-submenu'>
-                                    <a href='?t=3' role='button' data-toggle='dropdown'
-                                       aria-haspopup='true' aria-expanded='false' class='dropdown-item dropdown-toggle'>level
-                                        2</a>
-                                    <ul class='dropdown-menu border-0 shadow'>
-                                        <li><a href='?t=32' class='dropdown-item'>3rd level</a></li>
-                                        <li><a href='?t=32' class='dropdown-item'>3rd level</a></li>
-                                        <li><a href='#' class='dropdown-item'>3rd level</a></li>
-                                        <li class='dropdown-submenu'>
-                                            <a href='?t=3' role='button' data-toggle='dropdown'
-                                               aria-haspopup='true' aria-expanded='false'
-                                               class='dropdown-item dropdown-toggle'>level
-                                                2</a>
-                                            <ul class='dropdown-menu border-0 shadow'>
-                                                <li><a href='?t=32' class='dropdown-item'>3rd level</a></li>
-                                                <li><a href='?t=32' class='dropdown-item'>3rd level</a></li>
-                                                <li><a href='#' class='dropdown-item'>3rd level</a></li>
-                                            </ul>
-                                    </ul>
-                                </li>
-                                <!-- End Level three -->
-
-                                <li><a href='#' class='dropdown-item'>level 2</a></li>
-                                <li><a href='#' class='dropdown-item'>level 2</a></li>
-                            </ul>
-                        </li>
-                        <!-- End Level two -->
-                    </ul>
-                </li>
-                <!-- End Level one -->
-
-                <li class='nav-item'><a href='#' class='nav-link'>About</a></li>
-                <li class='nav-item'><a href='#' class='nav-link'>Services</a></li>
-                <li class='nav-item'><a href='#' class='nav-link'>Contact</a></li>
-            </ul>
         </div>
     </div>
 </nav>
+<hr>
+
 <!-- For demo purpose -->
 <section class="py-5 text-white">
     <div class="container py-4">
@@ -210,7 +146,7 @@ $menu = createMenuMultiBootstrap(0, 0, $rubriques);
         <h1>Bootstrap starter template</h1>
         <p class="lead">Use this document as a way to quickly start any new project.<br> All you get is this text and a
             mostly barebones HTML document.</p>
-        <pre><?php var_dump($rubriques);?></pre>
+        <pre><?php var_dump($rubriques); ?></pre>
     </div>
 
 </main><!-- /.container -->

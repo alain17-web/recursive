@@ -1,6 +1,6 @@
 <?php
 // fonction récursive pour obtenir des ul > li imbriqués pour un menu multi-niveau
-function createMenuMultiBootstrap(int $parent, int $level, array $rub)
+function createMenuMultiBootstrap(int $parent, int $level, array $rub,string $nom_parent="")
 {
     // initialisation à chaque récursivité
     $out = ""; // chaîne vide
@@ -12,11 +12,12 @@ function createMenuMultiBootstrap(int $parent, int $level, array $rub)
     // tant qu'on a des rubriques
     foreach ($rub as $item) {
         $sous0 = false;
+        $nom_parent = $item['rubriques_name'];
         // si enfant de l'id de la rubrique actuelle (0 pour les menus de l'accueil)
         if ($parent == $item['rubriques_idrubriques']) {
 
             // si le level vaut 0
-            if(!$level) {
+            if (!$level) {
 
                 // on cherche les enfants
                 foreach ($rub as $item2) {
@@ -27,63 +28,44 @@ function createMenuMultiBootstrap(int $parent, int $level, array $rub)
                     }
 
                 }
-                    // si on trouve un enfant on a un niveau 1 de menu
-                    if($sous0){
-                        // si on a des sous-menu de niveau 1
-                        $out .= "<li class='nav-item dropdown'>
+                // si on trouve un enfant on a un niveau 1 de menu
+                if ($sous0) {
+                    // si on a des sous-menu de niveau 1
+                    $out .= "<li class='nav-item dropdown'>
                     <a href='#' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'
                        class='nav-link dropdown-toggle'>{$item['rubriques_name']}</a><ul class='dropdown-menu border-0 shadow'>\n";
-                    }else{
-                        $out .= "<li class='nav-item'><a  class='nav-link' href='?id={$item['idrubriques']}'>{$item['rubriques_name']}</a>";
-
-                    }
 
                 }
 
-
-            // si on a un sous-menu
+            } // si on a un sous-menu
             elseif ($prevLevel < $level) {
 
-                // 2 retour à la ligne
-                $out .= "\n\n";
-                // on augmente l'indentation (tab) suivant le level
-                for ($i = 0; $i < $level; $i++) $out .= "       ";
                 // début du sous-menu
-                $out .= "<li class='dropdown-submenu'>
-                            <a href='#' role='button' data-toggle='dropdown' aria-haspopup='true'
-                               aria-expanded='false' class='dropdown-item dropdown-toggle'>Régions</a>
+                $out .= "\n<li class='dropdown-submenu'><a href='#' role='button' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false' class='dropdown-item dropdown-toggle'>détail</a>
 <ul class='dropdown-menu border-0 shadow'>";
             }
-                // affichage du lien avec indentation
-                $out .= "\n";
-                for ($i = 0; $i < $level; $i++) $out .= "       ";
-                $out .= "<li class='nav-item'><a  class='nav-link' href='?id={$item['idrubriques']}'>{$item['rubriques_name']}</a>";
+            // affichage du lien
+            $out .= "\n<li class='nav-item'><a  class='nav-link' href='?id={$item['idrubriques']}'>{$item['rubriques_name']}</a>";
 
-                // mise à jour du level précédent (pas d'ul class='menu')
-                $prevLevel = $level;
+            // mise à jour du level précédent (pas d'ul class='menu')
+            $prevLevel = $level;
 
             // chargement récursif tant qu'on a des sous éléments
-            $out .= createMenuMultiBootstrap($item['idrubriques'], ($level + 1), $rub);
+            $out .= createMenuMultiBootstrap($item['idrubriques'], ($level + 1), $rub,$nom_parent);
 
-            if($sous0){
-               $out.= "</ul></li>";
+            if ($sous0) {
+                $out .= "</ul>";
             }
 
             // fermeture du li (fin de l'arborescence: plus d'enfants) avec indentation
-            // Merci @McDibou pour la correction de cette erreur !
-            $out .= "\n";
-            for ($i = 0; $i < $level; $i++) $out .= "       ";
             $out .= "</li>";
 
         }
     }
 
-
     // fermeture du ul si on a pas de rubriques enfants du level actuel avec indentation
     if ($prevLevel == $level) {
-        $out .= "\n";
-        for ($i = 0; $i < $level; $i++) $out .= "      ";
-        $out .= "</ul></li>";
+        $out .= "</ul>";
     }
 
     // sortie des données dans un $out .= $out, ou si c'est le dernier appel sortie finale
