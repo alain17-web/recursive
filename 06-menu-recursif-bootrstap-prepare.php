@@ -6,59 +6,7 @@
 
 // dépendances
 require_once "connect.php";
-
-// fonction récursive pour obtenir des ul > li imbriqués pour un menu multi-niveau
-function createMenuMulti(int $parent, int $level, array $rub)
-{
-    // initialisation à chaque récursivité
-    $out = ""; // chaîne vide
-    $prevLevel = 0;// niveau précédent, 0 au démarage
-
-    // premier passage (ouverture du premier menu)
-    if (!$level && !$prevLevel) $out .= "<ul id='startmenu'>";
-
-    // tant qu'on a des rubriques
-    foreach ($rub as $item) {
-        // si enfant de l'id de la rubrique actuelle (0 pour les menus de l'accueil)
-        if ($parent == $item['rubriques_idrubriques']) {
-            // si on a un sous-menu
-            if ($prevLevel < $level) {
-                // 2 retour à la ligne
-                $out .= "\n\n";
-                // on augmente l'indentation (tab) suivant le level
-                for ($i = 0; $i < $level; $i++) $out .= "       ";
-                // début du sous-menu
-                $out .= "<ul class='menu'>\n";
-            }
-            // affichage du lien avec indentation
-            $out .= "\n";
-            for ($i = 0; $i < $level; $i++) $out .= "       ";
-            $out .= "<li><a href='?id={$item['idrubriques']}'>{$item['rubriques_name']}</a>";
-
-            // mise à jour du level précédent (pas d'ul class='menu')
-            $prevLevel = $level;
-
-            // chargement récursif tant qu'on a des sous éléments
-            $out .= createMenuMulti($item['idrubriques'], ($level + 1), $rub);
-
-            // fermeture du li (fin de l'arborescence: plus d'enfants) avec indentation
-            // Merci @McDibou pour la correction de cette erreur !
-            $out .= "\n";
-            for ($i = 0; $i < $level; $i++) $out .= "       ";
-            $out .= "</li>";
-        }
-    }
-
-    // fermeture du ul si on a pas de rubriques enfants du level actuel avec indentation
-    if ($prevLevel == $level) {
-        $out .= "\n";
-        for ($i = 0; $i < $level; $i++) $out .= "      ";
-        $out .= "</ul>";
-    }
-
-    // sortie des données dans un $out .= $out, ou si c'est le dernier appel sortie finale
-    return $out;
-}
+require_once "06-createMenuMultiBootstrap.php";
 
 // connexion
 $db = connect();
@@ -72,7 +20,7 @@ $request = mysqli_query($db, $sql) or die(mysqli_error($db));
 // si on récupère au moins une rubrique on la/les met dans un tableau indexé contenant des tableaux associatifs, sinon c'est un tableau vide
 $rubriques = (mysqli_num_rows($request)) ? mysqli_fetch_all($request, MYSQLI_ASSOC) : [];
 
-$menu = createMenuMulti(0, 0, $rubriques);
+$menu = createMenuMultiBootstrap(0, 0, $rubriques);
 
 ?>
 <!doctype html>
@@ -153,57 +101,70 @@ $menu = createMenuMulti(0, 0, $rubriques);
 <body>
 <nav class="navbar navbar-expand-lg navbar-light bg-white py-3 shadow-sm">
     <div class="container">
-        <a href="#" class="navbar-brand font-weight-bold">Multilevel Dropdown</a>
+        <a href="#" class="navbar-brand font-weight-bold">Multilevel Dropdown Perso</a>
         <button type="button" data-toggle="collapse" data-target="#navbarContent" aria-controls="navbars"
                 aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler">
             <span class="navbar-toggler-icon"></span>
         </button>
+        
+        <div id='navbarContent' class='collapse navbar-collapse'>
+<?=$menu?>
+        </div>
+</nav>
+<hr>
+<nav class='navbar navbar-expand-lg navbar-light bg-white py-3 shadow-sm'>
+    <div class='container'>
+        <a href='#' class='navbar-brand font-weight-bold'>Multilevel Dropdown</a>
+        <button type='button' data-toggle='collapse' data-target='#navbarContent' aria-controls='navbars'
+                aria-expanded='false' aria-label='Toggle navigation' class='navbar-toggler'>
+            <span class='navbar-toggler-icon'></span>
+        </button>
 
 
-        <div id="navbarContent" class="collapse navbar-collapse">
-            <ul class="navbar-nav mr-auto">
+        <div id='navbarContent' class='collapse navbar-collapse'>
+            <ul class='navbar-nav mr-auto'>
                 <!-- Level one dropdown -->
-                <li class="nav-item dropdown">
-                    <a href="?h=5" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
-                       class="nav-link dropdown-toggle">Dropdown</a>
-                    <ul class="dropdown-menu border-0 shadow">
-                        <li><a href="#" class="dropdown-item">Some action </a></li>
-                        <li><a href="#" class="dropdown-item">Some other action</a></li>
+                <li class='nav-item dropdown'>
+                    <a href='?h=5' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'
+                       class='nav-link dropdown-toggle'>Dropdown</a>
+                    <ul class='dropdown-menu border-0 shadow'>
+                        <li><a href='#' class='dropdown-item'>Some action </a></li>
+                        <li><a href='#' class='dropdown-item'>Some other action</a></li>
 
                         <!-- Level two dropdown-->
-                        <li class="dropdown-submenu">
-                            <a href="#" role="button" data-toggle="dropdown" aria-haspopup="true"
-                               aria-expanded="false" class="dropdown-item dropdown-toggle">Hover for action</a>
-                            <ul class="dropdown-menu border-0 shadow">
+                        <li class='dropdown-submenu'>
+                            <a href='#' role='button' data-toggle='dropdown' aria-haspopup='true'
+                               aria-expanded='false' class='dropdown-item dropdown-toggle'>Hover for action</a>
+                            <ul class='dropdown-menu border-0 shadow'>
                                 <li>
-                                    <a tabindex="-1" href="#" class="dropdown-item">level 2</a>
+                                    <a tabindex='-1' href='#' class='dropdown-item'>level 2</a>
                                 </li>
 
                                 <!-- Level three dropdown-->
-                                <li class="dropdown-submenu">
-                                    <a href="?t=3" role="button" data-toggle="dropdown"
-                                       aria-haspopup="true" aria-expanded="false" class="dropdown-item dropdown-toggle">level
+                                <li class='dropdown-submenu'>
+                                    <a href='?t=3' role='button' data-toggle='dropdown'
+                                       aria-haspopup='true' aria-expanded='false' class='dropdown-item dropdown-toggle'>level
                                         2</a>
-                                    <ul class="dropdown-menu border-0 shadow">
-                                        <li><a href="?t=32" class="dropdown-item">3rd level</a></li>
-                                        <li><a href="?t=32" class="dropdown-item">3rd level</a></li>
-                                        <li><a href="#" class="dropdown-item">3rd level</a></li>
-                                        <li class="dropdown-submenu">
-                                            <a href="?t=3" role="button" data-toggle="dropdown"
-                                               aria-haspopup="true" aria-expanded="false"
-                                               class="dropdown-item dropdown-toggle">level
+                                    <ul class='dropdown-menu border-0 shadow'>
+                                        <li><a href='?t=32' class='dropdown-item'>3rd level</a></li>
+                                        <li><a href='?t=32' class='dropdown-item'>3rd level</a></li>
+                                        <li><a href='#' class='dropdown-item'>3rd level</a></li>
+                                        <li class='dropdown-submenu'>
+                                            <a href='?t=3' role='button' data-toggle='dropdown'
+                                               aria-haspopup='true' aria-expanded='false'
+                                               class='dropdown-item dropdown-toggle'>level
                                                 2</a>
-                                            <ul class="dropdown-menu border-0 shadow">
-                                                <li><a href="?t=32" class="dropdown-item">3rd level</a></li>
-                                                <li><a href="?t=32" class="dropdown-item">3rd level</a></li>
-                                                <li><a href="#" class="dropdown-item">3rd level</a></li>
+                                            <ul class='dropdown-menu border-0 shadow'>
+                                                <li><a href='?t=32' class='dropdown-item'>3rd level</a></li>
+                                                <li><a href='?t=32' class='dropdown-item'>3rd level</a></li>
+                                                <li><a href='#' class='dropdown-item'>3rd level</a></li>
                                             </ul>
                                     </ul>
                                 </li>
                                 <!-- End Level three -->
 
-                                <li><a href="#" class="dropdown-item">level 2</a></li>
-                                <li><a href="#" class="dropdown-item">level 2</a></li>
+                                <li><a href='#' class='dropdown-item'>level 2</a></li>
+                                <li><a href='#' class='dropdown-item'>level 2</a></li>
                             </ul>
                         </li>
                         <!-- End Level two -->
@@ -211,9 +172,9 @@ $menu = createMenuMulti(0, 0, $rubriques);
                 </li>
                 <!-- End Level one -->
 
-                <li class="nav-item"><a href="#" class="nav-link">About</a></li>
-                <li class="nav-item"><a href="#" class="nav-link">Services</a></li>
-                <li class="nav-item"><a href="#" class="nav-link">Contact</a></li>
+                <li class='nav-item'><a href='#' class='nav-link'>About</a></li>
+                <li class='nav-item'><a href='#' class='nav-link'>Services</a></li>
+                <li class='nav-item'><a href='#' class='nav-link'>Contact</a></li>
             </ul>
         </div>
     </div>
@@ -249,6 +210,7 @@ $menu = createMenuMulti(0, 0, $rubriques);
         <h1>Bootstrap starter template</h1>
         <p class="lead">Use this document as a way to quickly start any new project.<br> All you get is this text and a
             mostly barebones HTML document.</p>
+        <pre><?php var_dump($rubriques);?></pre>
     </div>
 
 </main><!-- /.container -->
